@@ -4,6 +4,9 @@ import fisa.ticketing.manager.TicketingManager;
 import fisa.ticketing.common.ThreadUtil;
 import java.util.Random;
 
+/**
+ * 사용자의 예약 시도 및 변심(취소) 과정을 시뮬레이션합니다.
+ */
 public class UserAction implements Runnable {
     private final TicketingManager manager;
     private final String userName;
@@ -18,29 +21,29 @@ public class UserAction implements Runnable {
 
     @Override
     public void run() {
+        // 1. 접속 대기 (0~0.5초)
         ThreadUtil.sleep(random.nextInt(500));
         
         boolean isSuccess = false;
+        int pick = -1; // 예약에 성공한 좌석 번호를 기억하기 위한 변수
         
-        // 예약에 성공할 때까지 계속 시도 (단, 대기 실패 시 다른 자리를 고름)
+        // 2. 예약 성공할 때까지 무한 반복 (대기 시간 초과 시 다른 좌석 선택)
         while (!isSuccess) {
-            int pick = random.nextInt(totalSeats);
-            
-            // 5초 대기 기능이 포함된 예약 시도
+            pick = random.nextInt(totalSeats);
             isSuccess = manager.reserveWithTimeout(pick, userName);
             
             if (!isSuccess) {
-                // 실패했다면 아주 잠시 쉬었다가 다른 좌석으로 재시도
+                // 대기에 실패(10초 초과 등)했다면 0.1초 쉬고 다시 루프를 돕니다.
                 ThreadUtil.sleep(100); 
             }
         }
 
-        // 예약 성공 후 20% 확률로 취소 시나리오 (취소표 발생 유도)
+        // 3. 예약 성공 후 20% 확률로 취소 발생
         if (random.nextInt(10) < 2) {
-            ThreadUtil.sleep(2000); // 2초 뒤 취소
-            int mySeat = -1; 
-            // 실제 구현 시 유저가 앉은 좌석 번호를 추적해야 함 (여기선 간단히 로직만 표현)
-            // manager.cancelReservation(pick); 
+            // "아... 갈까 말까?" 고민하는 대기 시간 2초
+            ThreadUtil.sleep(2000); 
+
+            manager.cancelReservation(pick);
         }
     }
 }

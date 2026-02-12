@@ -4,7 +4,7 @@ import fisa.ticketing.manager.TicketingManager;
 import fisa.ticketing.thread.UserAction;
 
 /**
- * [디벨롭 버전] 제한 시간 대기 및 재시도 로직을 포함한 티켓팅 시뮬레이션 메인 클래스입니다.
+ * 제한 시간 대기 및 재시도 로직을 포함한 티켓팅 시뮬레이션 메인 클래스입니다.
  */
 public class Main {
     public static void main(String[] args) throws InterruptedException {
